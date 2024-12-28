@@ -1,0 +1,45 @@
+/*Banner part beginning*/
+
+.banner
+{
+    border-radius: 3px;
+    background-color: grey;
+    height: 100px;
+}
+
+.website_title
+{
+    display: flex;
+    position: relative;
+    left: 45%;
+}
+
+.link
+{
+    display: flex;
+    gap: 20px;
+    position: relative;
+    left: 45.5%;
+    top: -15%;
+}
+
+.banner a
+{
+    color: white;
+    text-decoration: none;
+    padding: 10px 5x;
+    border-radius: 3px;
+    transition: 0.5s;
+}
+
+.banner a:hover
+{
+    color:white; 
+    text-decoration:none; 
+    cursor:pointer;
+    background-color: black;
+    padding: 5px 5px;
+}
+
+/*Banner part end*/
+
