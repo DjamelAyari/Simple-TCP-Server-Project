@@ -6,11 +6,12 @@
 
 int bytes_received = 0;
 int total_bytes_received = 0;
+int loop_nbr = 1;
 int header_len = 0;
 int content_length = 0;
-char *method;
-char content_length_char;
-char content_length_char_end;
+char *method = NULL;
+char *content_length_char = NULL;
+char *content_length_char_end = NULL;
 int body_len;
 
 char *ptr_request, *ptr_header, *ptr_body = NULL;
@@ -66,13 +67,14 @@ handle_client_request(SSL *ssl)
             free(temp_request);
             temp_request = NULL;
         }
-
-        fprintf(stdout, "***BYTES RECEIVED = %d***\n", bytes_received);
+        loop_nbr += 1
+        fprintf(stdout, "***BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, bytes_received);
+        fprintf(stdout, "***TOTAL BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, total_bytes_received);
     }
 
     if (bytes_received <= 0)
     {
-        fprintf("bytes_received <= 0\n");
+        fprintf("WARNING -> bytes_received <= 0\n");
         
         int ssl_error = SSL_get_error(ssl, bytes_received);
         fprintf(stderr, "SSL_read failed with error: %d\n", ssl_error);
@@ -110,7 +112,7 @@ handle_client_request(SSL *ssl)
     ptr_request[bytes_received] = '\0';
 }
 
-fprintf(stdout, "***TOTAL BYTES RECEIVED = %d***\n", total_bytes_received);
+fprintf(stdout, "***TOTAL BYTES RECEIVED AFTER WHILE LOOP END = %d***\n", total_bytes_received);
 
 fprintf(stdout, "***RAW REQUEST: %s***\n", ptr_request);
 
@@ -129,9 +131,10 @@ fill_header_buffer(ptr_request)
             if(temp_header == NULL)
             {
                 printf("Memory reallocation for header failed!\n");
-                free(ptr_request);
-                free(ptr_header);
-                free(ptr_body);
+                free(ptr_request); //Does it also need to be set to NULL ?
+                free(ptr_header); //Does it also need to be set to NULL ?
+                free(ptr_body); //Does it also need to be set to NULL ?
+                free(ptr_header_end); //Does it also need to be set to NULL ?
                 return(1);
             }
             ptr_header = temp_header;
@@ -142,12 +145,22 @@ fill_header_buffer(ptr_request)
         strncpy(ptr_header, ptr_request, header_len);
         ptr_header[header_len] = '\0';
     }
-    else
+    else if(ptr_header_end == NULL)
     {
-        fprintf(stdout, "ptr_header_end is NULL or it's value is not \r\n\r\n !\n");
+        fprintf(stdout, "ptr_header_end is NULL !\n");
         free(ptr_request);
         free(ptr_header);
         free(ptr_body);
+        return(1);
+    }
+    else
+    {
+        fprintf(stdout, "ptr_header_end value is not '\r\n\r\n' !\n");
+        free(ptr_request);
+        free(ptr_header);
+        free(ptr_body);
+        free(ptr_header_end);
+        ptr_header_end = NULL; //Does it also need to be set to NULL ?
         return(1);
     }
 }
@@ -161,26 +174,66 @@ fill_body_buffer()
     free(cpy_ptr_header);
     cpy_ptr_header = NULL;
 
-    if(method != NULL && strncmp(method, "POST", 3) == 0)//Take of the possibility that method could be GET
+    if(method != NULL && strncmp(method, "POST", 3) == 0)
     {
         content_length_char = strstr(ptr_header, "Content-Length: ") + 16;
-        if(content_length_char != NULL && strncmp(content_length_char, "Content-Length: ", 15) == 0)
+        if(content_length_char != NULL && (content_length_char >= 48 && content_length_char <= 57))
         {
             content_length_char_end = strstr(content_length_char, "\r\n");
-            if (content_length_char_end != NULL && strncmp(content_length_char_end, "\r\n", 1) == 0)
+            if(content_length_char_end != NULL && strncmp(content_length_char_end, "\r\n", 1) == 0)
 			{
 				*content_length_char_end = '\0';
 				content_length = atoi(content_length_char);
 				*content_length_char_end = "\r\n";  // Restore original character
 			}
+            else if(content_length_char_end == NULL)
+            {
+                printf("content_length_char_end is NULL !\n");
+                free(ptr_request);
+                free(ptr_header);
+                free(ptr_body);
+                free(ptr_header_end);
+                free(content_length_char);
+                ptr_header_end = NULL; //Does it also need to be set to NULL ?
+                return(1);
+            }
             else
             {
-                printf("content_length_char_end is NULL !!!\n");
+                fprintf(stdout, "content_length_char_end value is not '\r\n' !\n");
+                free(ptr_request);
+                free(ptr_header);
+                free(ptr_body);
+                free(ptr_header_end);
+                free(content_length_char);
+                free(content_length_char_end);
+                ptr_header_end = NULL; //Does it also need to be set to NULL ?
+                content_length_char_end = NULL;
+                return(1);
             }
+        }
+        else if(content_length_char == NULL)
+        {
+            fprintf(stdout, "content_length_char is NULL !\n");//or it's value is not Content-Length:
+            free(ptr_request);
+            free(ptr_header);
+            free(ptr_body);
+            free(ptr_header_end);
+            free(content_length_char_end);
+            ptr_header_end = NULL; //Does it also need to be set to NULL ?
+            content_length_char_end = NULL;
+            return(1);
         }
         else
         {
-            fprintf(stdout, "content_length_char is NULL or it's value is not Content-Length: !\n");
+            fprintf(stdout, "content_length_char value is not in the ASCII number range  !\n");
+            free(ptr_request);
+            free(ptr_header);
+            free(ptr_body);
+            free(ptr_header_end);
+            free(content_length_char);
+            free(content_length_char_end);
+            ptr_header_end = NULL; //Does it also need to be set to NULL ?
+            content_length_char_end = NULL;
             return(1);
         }
 
@@ -210,9 +263,14 @@ fill_body_buffer()
             printf("Content-Length is not superior to 0 !!!\n");
         }
     }
+    else if(method == NULL)
+    {
+        fprintf(stdout, "method is NULL ! \n");
+        return(1);
+    }
     else
     {
-        fprintf(stdout, "method is NULL or it's value is not POST ! \n");
+        fprintf(stdout, "The method is: \n", *method);
         return(1);
     }
     
