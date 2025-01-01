@@ -14,4 +14,6 @@ void process_get_request(char *header_pointer);
 
 void process_post_request(char *header_pointer, char *body_pointer);
 
+void send_file(SSL *ssl, const char *file_path);
+
 

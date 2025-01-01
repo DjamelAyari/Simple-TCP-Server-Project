@@ -29,11 +29,11 @@ void free_and_null(void **first, ...)
     {
         if (*current != NULL)
         {
-            free(*current);      // Free the memory.
-            *current = NULL;     // Set the pointer to NULL.
+            free(*current);
+            *current = NULL;
         }
 
-        current = va_arg(args, void **);  // Get the next argument.
+        current = va_arg(args, void **);
     }
 
     va_end(args);
@@ -71,8 +71,6 @@ void handle_client_request(SSL *ssl)
 {
     while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0)
     {
-        //Prendre en charge CORS
-        //Prendre en charge les réponses HTTP (200 Ok...)
         total_bytes_received += bytes_received;
 
         if(total_bytes_received >= INITIAL_BUFFER_SIZE)
