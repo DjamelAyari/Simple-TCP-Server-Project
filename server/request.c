@@ -1,5 +1,6 @@
 #include "server.h"
 #include "request.h"
+#include "ssl.h"
 #include <stdarg.h>
 
 #define INITIAL_BUFFER_SIZE 1024
@@ -122,6 +123,23 @@ void handle_client_request(SSL *ssl)
     ptr_request[bytes_received] = '\0';
 }
 
+void send_cors_response(SSL *ssl)
+{
+    if (strncmp(ptr_request, "OPTIONS", 7) == 0)
+    {
+        const char *response =
+            "HTTP/1.1 204 No Content\r\n"
+            "Access-Control-Allow-Origin: *\r\n"
+            "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n"
+            "Access-Control-Allow-Headers: Content-Type\r\n"
+            "\r\n";
+
+        SSL_write(ssl, response, strlen(response));
+    }
+}
+
+handle_client_request(SSL *ssl);
+
 fprintf(stdout, "***TOTAL BYTES RECEIVED AFTER WHILE LOOP END = %d***\n", total_bytes_received);
 
 fprintf(stdout, "***RAW REQUEST: %s***\n", ptr_request);
@@ -177,17 +195,17 @@ void content_length_extraction(ptr_header)
         return(1);
     }
     
+    if(strcmp(method, "GET") == 0)
+    {
+        fprintf(stdout, "The method is GET !\n");
+        process_get_request(ptr_header);
+        return(1);
+    }
+   
     if(strcmp(method, "POST") != 0)
     {
         fprintf(stdout, "The method is not POST !\n");
         fprintf(stdout, "The method is %s !\n", method);
-        return(1);
-    }
-
-    if(strcmp(method, "GET") == 0)
-    {
-        fprintf(stdout, "The method is GET !\n");
-
         return(1);
     }
 
@@ -228,7 +246,7 @@ void content_length_extraction(ptr_header)
 
 fprintf(stdout, "***COPYING THE BODY IN THE BODY'S BUFFER IF BODY EXIST***\n");
 
-void fill_body_buffer(ptr_header)
+void fill_body_buffer(ptr_header, content_length)
 {
 
     if(content_length > 0)
@@ -252,26 +270,10 @@ void fill_body_buffer(ptr_header)
     else
     {
         printf("Content-Length is not superior to 0 !!!\n");
+        printf("Content-Length is %d !!!\n", content_length);
     }
 
 }
 
-//1. Parse the HTTPS header.
-    //2. Check for the Origin header.
-    //3. If the Origin header is present and the request is cross-origin, handle CORS.
-    //4. If the method is OPTIONS, respond with the appropriate CORS headers and skip further processing.
-    //5. Handle the request (GET or POST).
+process_post_request(ptr_header, ptr_body);
 
-    /*HTTP/1.1 200 OK
-    Access-Control-Allow-Origin: http://anotherdomain.com
-    Access-Control-Allow-Methods: GET, POST
-    Access-Control-Allow-Headers: Content-Type
-    Access-Control-Allow-Credentials: true*/
-
-    /*Example of the Server's Response to Preflight Request:
-    HTTP/1.1 200 OK
-    Access-Control-Allow-Origin: http://mywebsite.com
-    Access-Control-Allow-Methods: GET, POST
-    Access-Control-Allow-Headers: Content-Type
-    Access-Control-Allow-Credentials: true
-    Access-Control-Max-Age: 86400*/
