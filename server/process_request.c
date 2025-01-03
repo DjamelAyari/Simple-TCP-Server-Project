@@ -46,7 +46,7 @@ parse_request(char *header_pointer)
 	printf("Path after replacement: %s\n", path_parse);
 }
 
-get_size_file()
+send_file()
 {
     FILE *ptr_file;
     ptr_file = fopen("../html/high.html", "r");
@@ -62,8 +62,7 @@ get_size_file()
         return(1);
     }
 
-    fseek(ptr_file, 0, SEEK_END);
-    if(fseek < 0)
+    if(fseek(ptr_file, 0, SEEK_END) != 0)
     {
         fprintf(stdout, "fseek < 0 !\n");
         fclose(ptr_file);
@@ -71,13 +70,22 @@ get_size_file()
     }
 
     file_size = ftell(ptr_file);
+    if (file_size < 0)
+    {
+        fprintf(stdout, "ftell failed!\n");
+        fclose(ptr_file);
+        return(1);
+    }
 
-    const char *response_header = 
+    rewind(ptr_file);
+
+    char response_header[256];
+    snprintf(response_header, sizeof(response_header),
     "HTTP/1.1 200 OK\r\n"
     "Content-Type: text/html; charset=utf-8\r\n"
     "Content-Length: %ld\r\n"
     "Connection: close\r\n\r\n",
-    file_size;
+    file_size);
 
     SSL_write(ssl, response_header, strlen(response_header));
 
