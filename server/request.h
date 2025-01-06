@@ -1,3 +1,5 @@
+void allocate_buffers();
+
 void handle_client_request(SSL *ssl);
 
 void fill_header_buffer(char *request_pointer);

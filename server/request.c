@@ -1,6 +1,6 @@
 #include "server.h"
-#include "request.h"
 #include "ssl.h"
+#include "request.h"
 #include <stdarg.h>
 
 #define INITIAL_BUFFER_SIZE 1024
@@ -39,33 +39,35 @@ void free_and_null(void **first, ...)
     va_end(args);
 }
 
-
-ptr_request = malloc(INITIAL_BUFFER_SIZE * sizeof(char));
-if(ptr_request == NULL)
+void allocate_buffers()
 {
-    printf("Memory allocation for request failed !\n");
-    return(1);
-}   
-memset(ptr_request, 0, INITIAL_BUFFER_SIZE);
+    ptr_request = malloc(INITIAL_BUFFER_SIZE * sizeof(char));
+    if(ptr_request == NULL)
+    {
+        printf("Memory allocation for request failed !\n");
+        return;
+    }   
+    memset(ptr_request, 0, INITIAL_BUFFER_SIZE);
 
-ptr_header = malloc(INITIAL_BUFFER_SIZE * sizeof(char));
-if(ptr_header == NULL)
-{
-    printf("Memory allocation for header failed !\n");
-    free(ptr_request);
-    return(1);
-}   
-memset(ptr_header, 0, INITIAL_BUFFER_SIZE);
+    ptr_header = malloc(INITIAL_BUFFER_SIZE * sizeof(char));
+    if(ptr_header == NULL)
+    {
+        printf("Memory allocation for header failed !\n");
+        free(ptr_request);
+        return;
+    }   
+    memset(ptr_header, 0, INITIAL_BUFFER_SIZE);
 
-ptr_body = malloc(INITIAL_BUFFER_SIZE * sizeof(char));
-if(ptr_body == NULL)
-{
-    printf("Memory allocation for body failed !\n");
-    free(ptr_request);
-    free(ptr_header);
-    return(1);
-}   
-memset(ptr_body, 0, INITIAL_BUFFER_SIZE);
+    ptr_body = malloc(INITIAL_BUFFER_SIZE * sizeof(char));
+    if(ptr_body == NULL)
+    {
+        printf("Memory allocation for body failed !\n");
+        free(ptr_request);
+        free(ptr_header);
+        return;
+    }   
+    memset(ptr_body, 0, INITIAL_BUFFER_SIZE);
+}
 
 void handle_client_request(SSL *ssl)
 {
@@ -80,7 +82,7 @@ void handle_client_request(SSL *ssl)
             {
                 printf("Memory reallocation for request failed!\n");
                 free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
-                return(1);
+                return;
             }
             ptr_request = temp_request;
         }
@@ -100,23 +102,23 @@ void handle_client_request(SSL *ssl)
         {
             fprintf(stderr, "Connection closed by the client.\n");
             free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
-            return(1);
+            return;
         }
         else if (ssl_error == SSL_ERROR_WANT_READ || ssl_error == SSL_ERROR_WANT_WRITE)
         {
             fprintf(stderr, "SSL operation not complete. Try again later.\n");
             free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
-            return(1);
+            return;
         }
         else
         {
             fprintf(stderr, "SSL error occurred.\n");
             free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
-            return(1);
+            return;
         }
 
         free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
-        return (1);
+        return;
     }
     ptr_request[bytes_received] = '\0';
 }
@@ -136,29 +138,29 @@ void send_cors_response(SSL *ssl)
     }
 }
 
-handle_client_request(SSL *ssl);
+void handle_client_request(SSL *ssl);
 
-fprintf(stdout, "***TOTAL BYTES RECEIVED AFTER WHILE LOOP END = %d***\n", total_bytes_received);
-
-fprintf(stdout, "***RAW REQUEST: %s***\n", ptr_request);
-
-fprintf(stdout, "***COPYING THE HEADER IN THE HEADER'S BUFFER***\n");
-
-void fill_header_buffer(ptr_request)
+void fill_header_buffer(char *ptr_request)
 {
+    printf("***TOTAL BYTES RECEIVED AFTER WHILE LOOP END = %d***\n", total_bytes_received);
+
+    printf("***RAW REQUEST: %s***\n", ptr_request);
+
+    printf("***COPYING THE HEADER IN THE HEADER'S BUFFER***\n");
+    
     char *ptr_header_end = strstr(ptr_request, "\r\n\r\n");
 
     if(ptr_header_end != NULL && strncmp(ptr_header_end, "\r\n\r\n", 4) == 0)
     {
         header_len = ptr_header_end - ptr_request + 4;
-        if(ptr_header + header_len > INITIAL_BUFFER_SIZE)
+        if(header_len > INITIAL_BUFFER_SIZE)
         {
             char *temp_header = realloc(ptr_header, header_len);
             if(temp_header == NULL)
             {
                 printf("Memory reallocation for header failed!\n");
                 free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
-                return(1);
+                return;
             }
             ptr_header = temp_header;
         }
@@ -170,41 +172,41 @@ void fill_header_buffer(ptr_request)
     {
         fprintf(stdout, "ptr_header_end is NULL !\n");
         free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
-        return(1);
+        return;
     }
     else
     {
         fprintf(stdout, "ptr_header_end value is not '\r\n\r\n' !\n");
         free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
-        return(1);
+        return;
     }
 }
 
-fprintf(stdout, "***SEARCH AND EXTRACTION OF CONTENT LENGTH IF IT EXIST***\n");
-
-void content_length_extraction(ptr_header)
+void content_length_extraction(char *ptr_header)
 {
+    printf("***SEARCH AND EXTRACTION OF CONTENT LENGTH IF IT EXIST***\n");
+    
     char *cpy_ptr_header = strdup(ptr_header);
     method = strtok(cpy_ptr_header, " ");
     
     if(method == NULL)
     {
         fprintf(stdout, "The method is NULL !\n");
-        return(1);
+        return;
     }
     
     if(strcmp(method, "GET") == 0)
     {
         fprintf(stdout, "The method is GET !\n");
         process_get_request(ptr_header);
-        return(1);
+        return;
     }
    
     if(strcmp(method, "POST") != 0)
     {
         fprintf(stdout, "The method is not POST !\n");
         fprintf(stdout, "The method is %s !\n", method);
-        return(1);
+        return;
     }
 
     content_length_char = strstr(ptr_header, "Content-Length: ") + 16;
@@ -212,14 +214,14 @@ void content_length_extraction(ptr_header)
     if(content_length_char == NULL)
     {
         fprintf(stdout, "The content_length_char is NULL !\n");
-        return(1);
+        return;
     }
 
     if(! isdigit(*content_length_char))
     {
-        fprintf(stdout, "The value of content_length_char is not a number !\n");
-        fprintf(stdout, "The value of content_length_char is %s !\n", *content_length_char);
-        return(1);
+        printf("The value of content_length_char is not a number !\n");
+        printf("The value of content_length_char is %d !\n", *content_length_char);
+        return;
     }
 
     content_length_char_end = strstr(content_length_char, "\r\n");
@@ -227,14 +229,14 @@ void content_length_extraction(ptr_header)
     if(content_length_char_end == NULL)
     {
         fprintf(stdout, "The content_length_char_end is NULL !\n");
-        return(1);
+        return;
     }
 
     if(strncmp(content_length_char_end, "\r\n", 1) != 0)
     {
         fprintf(stdout, "The content_length_char_end value is not '\r\n' !\n");
-        fprintf(stdout, "The content_length_char_end value is %s !\n", *content_length_char_end);
-        return(1);
+        fprintf(stdout, "The content_length_char_end value is %d !\n", *content_length_char_end);
+        return;
     }
 
     *content_length_char_end = '\0';
@@ -242,11 +244,10 @@ void content_length_extraction(ptr_header)
 	*content_length_char_end = '\r';
 }
 
-fprintf(stdout, "***COPYING THE BODY IN THE BODY'S BUFFER IF BODY EXIST***\n");
-
-void fill_body_buffer(ptr_header, content_length)
+void fill_body_buffer(char *ptr_header, int content_length)
 {
-
+    printf("***COPYING THE BODY IN THE BODY'S BUFFER IF BODY EXIST***\n");
+    
     if(content_length > 0)
     {
         body_len = total_bytes_received - header_len;
@@ -257,7 +258,7 @@ void fill_body_buffer(ptr_header, content_length)
             {
                 printf("Memory reallocation for body failed!\n");
                 free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
-                return(1);
+                return;
             }
             ptr_body = temp_body;
         }
@@ -273,5 +274,5 @@ void fill_body_buffer(ptr_header, content_length)
 
 }
 
-process_post_request(ptr_header, ptr_body);
+void process_post_request(char *ptr_header, char *ptr_body);
 

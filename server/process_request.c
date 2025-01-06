@@ -1,15 +1,16 @@
 #include "server.h"
+#include "ssl.h"
 #include "request.h"
 
 char *method_parse, *path_parse = NULL;
 long file_size = 0;
 
-process_get_request(ptr_header)
+void process_get_request(char *ptr_header)
 {
     parse_request(ptr_header);
     if(strstr(path_parse, "/home"))
     {
-        snprintf(path_parse, sizeof(path_parse), "../html%d.html");
+        snprintf(path_parse, sizeof(path_parse), "../html%s.html");
         send_file(path_parse);
     }
 }

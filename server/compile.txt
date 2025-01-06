@@ -1,0 +1,1 @@
+root@DjamelAYARI:/mnt/c/Users/ayari/OneDrive/Bureau/Developpeur Road Map/Network/Simple TCP Server Project# gcc -o server server/server.c server/request.c server/process_request.c -I/usr/include -L/usr/lib -lssl -lcrypto

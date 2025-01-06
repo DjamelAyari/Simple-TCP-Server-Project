@@ -97,7 +97,7 @@ int main()
     socket_listen = socket(bind_address->ai_family, bind_address->ai_socktype, bind_address->ai_protocol);
     if(!ISVALIDSOCKET(socket_listen))
     {
-        fprintf(stderr, "socket() failed: %s\n", GETSOCKETERRNO());
+        fprintf(stderr, "socket() failed: %s\n", strerror(GETSOCKETERRNO()));
         freeaddrinfo(bind_address);
         SSL_CTX_free(ctx);
         CLOSESOCKET(socket_listen);
@@ -108,7 +108,7 @@ int main()
     fprintf(stdout, "Binding the socket to the address...\n");
     if(bind(socket_listen, bind_address->ai_addr, bind_address->ai_addrlen) == -1)
     {
-        fprintf(stderr, "bind() failed: %s\n", GETSOCKETERRNO());
+        fprintf(stderr, "bind() failed: %s\n", strerror(GETSOCKETERRNO()));
         freeaddrinfo(bind_address);
         SSL_CTX_free(ctx);
         CLOSESOCKET(socket_listen);
@@ -120,7 +120,7 @@ int main()
     fprintf(stdout, "Listenning...\n");
     if (listen(socket_listen, 5) < 0)
     {
-        fprintf(stderr, "listen() failed: %s\n", GETSOCKETERRNO());
+        fprintf(stderr, "listen() failed: %s\n", strerror(GETSOCKETERRNO()));
         SSL_CTX_free(ctx);
         CLOSESOCKET(socket_listen);
         return(1);
@@ -135,13 +135,14 @@ int main()
 
     fprintf(stdout, "Waiting for connexion...\n");
 
+    SOCKET i;
     while(1)
     {
         fd_set reads;
         reads = master;
         if(select(max_socket + 1, &reads, 0, 0, 0) < 0) //select < 0 car si la valeur de retour de select est < 0 cela veut dire qu'il y a eu une erreur.
         {
-            fprintf(stderr, "select() failed: %s\n", GETSOCKETERRNO());
+            fprintf(stderr, "select() failed: %s\n", strerror(GETSOCKETERRNO()));
             SSL_CTX_free(ctx);
             CLOSESOCKET(socket_listen);
             return(1);
@@ -151,7 +152,6 @@ int main()
             fprintf(stdout, "Select ok !\n");
         }
 
-        SOCKET i;
         for(i = 1; i <= max_socket; i++)// i commence à 1, tant que i est < ou = à maw_socket, il faut incrémenter i de 1
         {
             if(FD_ISSET(i, &reads))// si le i prêt à être pris en charge fait déjà partie du set reads il faut exectuer ce qu'il y a dans le if
@@ -165,7 +165,7 @@ int main()
                     SOCKET socket_client = accept(socket_listen, (struct sockaddr*)&client_address, &client_len);// acceptation de la demande de connexion du client
                     if(!ISVALIDSOCKET(socket_client))// si la valeur de retour de accept correspond à un erreur, il faut lever l'erreur, et donc l'afficher sur la console
                     {
-                        fprintf(stderr, "select() failed ! (%d)\n", GETSOCKETERRNO())
+                        fprintf(stderr, "select() failed ! (%d)\n", GETSOCKETERRNO());
                         SSL_CTX_free(ctx);
                         CLOSESOCKET(socket_listen);
                         return(1);
