@@ -2,14 +2,15 @@
 #include "request.h"
 
 char *method_parse, *path_parse = NULL;
-long file_size = 0.
+long file_size = 0;
 
 process_get_request(ptr_header)
 {
     parse_request(ptr_header);
     if(strstr(path_parse, "/home"))
     {
-        
+        snprintf(path_parse, sizeof(path_parse), "../html%d.html");
+        send_file(path_parse);
     }
 }
 
@@ -48,8 +49,9 @@ parse_request(char *header_pointer)
 
 send_file()
 {
+    complite_file_path = 
     FILE *ptr_file;
-    ptr_file = fopen("../html/high.html", "r");
+    ptr_file = fopen(path_parse, "r");
     if(!ptr_file)
     {
         const char *not_found_response = 
