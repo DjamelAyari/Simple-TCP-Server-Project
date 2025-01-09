@@ -182,7 +182,7 @@ void fill_header_buffer(char *ptr_request)
     }
 }
 
-void content_length_extraction(char *ptr_header)
+void content_length_extraction(SSL *ssl, char *ptr_header)
 {
     printf("***SEARCH AND EXTRACTION OF CONTENT LENGTH IF IT EXIST***\n");
     
@@ -198,7 +198,7 @@ void content_length_extraction(char *ptr_header)
     if(strcmp(method, "GET") == 0)
     {
         fprintf(stdout, "The method is GET !\n");
-        process_get_request(ptr_header);
+        process_get_request(ssl, ptr_header);
         return;
     }
    

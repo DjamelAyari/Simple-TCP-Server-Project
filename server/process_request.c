@@ -5,33 +5,33 @@
 char *method_parse, *path_parse = NULL;
 long file_size = 0;
 
-void process_get_request(char *ptr_header)
+void process_get_request(SSL *ssl, char *ptr_header)
 {
     parse_request(ptr_header);
     if(strstr(path_parse, "/home"))
     {
-        snprintf(path_parse, sizeof(path_parse), "../html%s.html");
-        send_file(path_parse);
+        snprintf(path_parse, sizeof(path_parse), "../html%s", path_parse);
+        send_file(ssl, path_parse);
     }
 }
 
-process_post_request(ptr_header, ptr_body)
+/*process_post_request(char *ptr_header, char *ptr_body)
 {
     parse_request(ptr_header);
-}
+}*/
 
-parse_request(char *header_pointer)
+void parse_request(char *ptr_header)
 {
-    char *parse_cpy_ptr_header = strdup(ptr_header;)
+    char *parse_cpy_ptr_header = strdup(ptr_header);
     if(parse_cpy_ptr_header != NULL)
     {
-        method_parse = strtok(get_cpy_ptr_header, " ");
+        method_parse = strtok(parse_cpy_ptr_header, " ");
         path_parse = strtok(NULL, " ");
     }
     else if(parse_cpy_ptr_header == NULL)
     {
         fprintf(stdout, "parse_cpy_ptr_header is NULL !\n");
-        return(1);
+        return;
     }
 
     int i = 0;
@@ -48,9 +48,8 @@ parse_request(char *header_pointer)
 	printf("Path after replacement: %s\n", path_parse);
 }
 
-send_file()
+void send_file(SSL *ssl, char *file_path)
 {
-    complite_file_path = 
     FILE *ptr_file;
     ptr_file = fopen(path_parse, "r");
     if(!ptr_file)
@@ -62,14 +61,14 @@ send_file()
         "Connection: close\r\n\r\n";
 
         SSL_write(ssl, not_found_response, strlen(not_found_response));
-        return(1);
+        return;
     }
 
     if(fseek(ptr_file, 0, SEEK_END) != 0)
     {
         fprintf(stdout, "fseek < 0 !\n");
         fclose(ptr_file);
-        return(1);
+        return;
     }
 
     file_size = ftell(ptr_file);
@@ -77,7 +76,7 @@ send_file()
     {
         fprintf(stdout, "ftell failed!\n");
         fclose(ptr_file);
-        return(1);
+        return;
     }
 
     rewind(ptr_file);
