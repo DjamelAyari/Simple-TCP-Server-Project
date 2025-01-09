@@ -54,7 +54,8 @@ int main()
 
 
     fprintf(stdout, "SSL certificat loading...\n");
-    if (SSL_CTX_use_certificate_file(ctx, "server.crt", SSL_FILETYPE_PEM) <= 0)
+    fprintf(stderr, "Attempting to load certificate from: %s\n", SSL_CERT_FILE);
+    if (SSL_CTX_use_certificate_file(ctx, SSL_CERT_FILE, SSL_FILETYPE_PEM) <= 0)
     {
         fprintf(stderr, "Error loading SSL certificate.\n");
         ERR_print_errors_fp(stderr);
@@ -63,7 +64,8 @@ int main()
     }
 
     fprintf(stdout, "SSL key loading...\n");
-    if (SSL_CTX_use_PrivateKey_file(ctx, "server.key", SSL_FILETYPE_PEM) <= 0)
+    fprintf(stderr, "Attempting to load key from: %s\n", SSL_KEY_FILE);
+    if (SSL_CTX_use_PrivateKey_file(ctx, SSL_KEY_FILE, SSL_FILETYPE_PEM) <= 0)
     {
         fprintf(stderr, "Error loading SSL key.\n");
         ERR_print_errors_fp(stderr);
