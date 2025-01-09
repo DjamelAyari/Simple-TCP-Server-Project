@@ -6,8 +6,8 @@
 #include <openssl/bio.h>
 #include <openssl/crypto.h>
 
-#define SSL_CERT_FILE "server.crt"  // Path to your SSL certificate
-#define SSL_KEY_FILE  "server.key" // Path to your private key
+#define SSL_CERT_FILE "openssl/server.crt"  // Path to your SSL certificate
+#define SSL_KEY_FILE  "openssl/server.key" // Path to your private key
 #define SSL_METHOD TLS_server_method() // Protocol (e.g., TLS)
 
 #endif
