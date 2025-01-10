@@ -85,7 +85,7 @@ int main()
     hints.ai_protocol = IPPROTO_TCP;
 
     struct addrinfo *bind_address;
-    int result = getaddrinfo("127.0.0.1", "443", &hints, &bind_address);
+    int result = getaddrinfo("localhost", "443", &hints, &bind_address);//127.0.0.1
     if (result != 0)
     {
         fprintf(stderr, "getaddrinfo() failed: %s\n", gai_strerror(result));
