@@ -52,6 +52,11 @@ int main()
         return(1);
     }
 
+    // Set protocol versions
+    SSL_CTX_set_min_proto_version(ctx, TLS1_2_VERSION);
+    SSL_CTX_set_max_proto_version(ctx, TLS1_3_VERSION);
+
+    printf("Using OpenSSL version: %s\n", OpenSSL_version(OPENSSL_VERSION));
 
     fprintf(stdout, "SSL certificat loading...\n");
     fprintf(stderr, "Attempting to load certificate from: %s\n", SSL_CERT_FILE);
