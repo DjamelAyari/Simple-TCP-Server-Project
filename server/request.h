@@ -2,7 +2,9 @@ void allocate_buffers();
 
 void handle_client_request(SSL *ssl);
 
-void fill_header_buffer(char *request_pointer);
+void rerun_handle_client_request(SSL *ssl);
+
+void fill_header_buffer(SSL *ssl, char *request_pointer);
 
 void content_length_extraction(SSL *ssl, char *header_pointer);
 

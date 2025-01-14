@@ -186,7 +186,7 @@ int main()
 
                     char address_buffer[100];
                     getnameinfo((struct sockaddr*)&client_address, client_len, address_buffer, sizeof(address_buffer), 0, 0, NI_NUMERICHOST);
-                    fprintf(stdout, "New connexion from %s", address_buffer);
+                    fprintf(stdout, "New connexion from %s\n", address_buffer);
                 }
                 else
                 {

@@ -18,8 +18,9 @@ int body_len;
 
 char *ptr_request, *ptr_header, *ptr_body = NULL;
 
+
 void free_and_null(void **first, ...)
-{
+{   
     va_list args;
     void **current = first;
 
@@ -71,7 +72,11 @@ void allocate_buffers()
 
 void handle_client_request(SSL *ssl)
 {
-    while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0)
+    fprintf(stdout, "Entered inside the handle_client_request()\n");
+    
+    allocate_buffers();
+    
+    while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 && !strstr(ptr_request, "\r\n\r\n"))
     {
         total_bytes_received += bytes_received;
 
@@ -86,7 +91,7 @@ void handle_client_request(SSL *ssl)
             }
             ptr_request = temp_request;
         }
-        loop_nbr += 1;
+        loop_nbr = loop_nbr++;
         fprintf(stdout, "***BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, bytes_received);
         fprintf(stdout, "***TOTAL BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, total_bytes_received);
     }
@@ -121,10 +126,15 @@ void handle_client_request(SSL *ssl)
         return;
     }
     ptr_request[bytes_received] = '\0';
+
+    send_cors_response(ssl);
+    printf("TEST!!!\n");
 }
 
 void send_cors_response(SSL *ssl)
 {
+    fprintf(stdout, "Entered inside the send_cors_response()\n");
+
     if (strncmp(ptr_request, "OPTIONS", 7) == 0)
     {
         const char *response =
@@ -136,12 +146,23 @@ void send_cors_response(SSL *ssl)
 
         SSL_write(ssl, response, strlen(response));
     }
+
+    //rerun_handle_client_request(ssl);
+    fill_header_buffer(ssl, ptr_request);
 }
 
-void handle_client_request(SSL *ssl);
-
-void fill_header_buffer(char *ptr_request)
+/*void rerun_handle_client_request(SSL *ssl)
 {
+    fprintf(stdout, "Re run the handle_client_request()\n");
+    handle_client_request(ssl);
+    fprintf(stdout, "Entered inside the fill_header_buffer()\n");
+    fill_header_buffer(ptr_request);
+}*/
+
+void fill_header_buffer(SSL *ssl, char *ptr_request)
+{
+    fprintf(stdout, "Entered inside the fill_header_buffer()\n");
+
     printf("***TOTAL BYTES RECEIVED AFTER WHILE LOOP END = %d***\n", total_bytes_received);
 
     printf("***RAW REQUEST: %s***\n", ptr_request);
@@ -180,6 +201,8 @@ void fill_header_buffer(char *ptr_request)
         free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
         return;
     }
+
+    content_length_extraction(ssl, ptr_header);
 }
 
 void content_length_extraction(SSL *ssl, char *ptr_header)
