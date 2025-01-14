@@ -7,8 +7,10 @@ long file_size = 0;
 
 void process_get_request(SSL *ssl, char *ptr_header)
 {
+    fprintf(stdout, "Entered inside the process_get_request()\n");
+    
     parse_request(ptr_header);
-    if(strstr(path_parse, "/home"))
+    if(strstr(path_parse, "/low"))
     {
         snprintf(path_parse, sizeof(path_parse), "../html%s", path_parse);
         send_file(ssl, path_parse);
@@ -22,6 +24,8 @@ void process_get_request(SSL *ssl, char *ptr_header)
 
 void parse_request(char *ptr_header)
 {
+    fprintf(stdout, "Entered inside the parse_request()\n");
+    
     char *parse_cpy_ptr_header = strdup(ptr_header);
     if(parse_cpy_ptr_header != NULL)
     {
@@ -50,6 +54,8 @@ void parse_request(char *ptr_header)
 
 void send_file(SSL *ssl, char *file_path)
 {
+    fprintf(stdout, "Entered inside the send_file()\n");
+    
     FILE *ptr_file;
     ptr_file = fopen(path_parse, "r");
     if(!ptr_file)

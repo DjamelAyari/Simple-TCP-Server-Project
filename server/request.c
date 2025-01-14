@@ -207,6 +207,8 @@ void fill_header_buffer(SSL *ssl, char *ptr_request)
 
 void content_length_extraction(SSL *ssl, char *ptr_header)
 {
+    fprintf(stdout, "Entered inside the content_length_extraction()\n");
+    
     printf("***SEARCH AND EXTRACTION OF CONTENT LENGTH IF IT EXIST***\n");
     
     char *cpy_ptr_header = strdup(ptr_header);
