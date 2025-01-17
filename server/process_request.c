@@ -4,6 +4,7 @@
 
 char *method_parse, *path_parse = NULL;
 long file_size = 0;
+char begin_path[10] = "html";
 
 void process_get_request(SSL *ssl, char *ptr_header)
 {
@@ -12,7 +13,8 @@ void process_get_request(SSL *ssl, char *ptr_header)
     parse_request(ptr_header);
     if(strstr(path_parse, "/low"))
     {
-        snprintf(path_parse, sizeof(path_parse), "../html%s", path_parse);
+        strncat(begin_path, path_parse, strlen(path_parse));
+        printf("Formatted path_parse: %s\n", begin_path);
         send_file(ssl, path_parse);
     }
 }
@@ -57,7 +59,7 @@ void send_file(SSL *ssl, char *file_path)
     fprintf(stdout, "Entered inside the send_file()\n");
     
     FILE *ptr_file;
-    ptr_file = fopen(path_parse, "r");
+    ptr_file = fopen(begin_path, "r");
     if(!ptr_file)
     {
         const char *not_found_response = 
@@ -67,6 +69,7 @@ void send_file(SSL *ssl, char *file_path)
         "Connection: close\r\n\r\n";
 
         SSL_write(ssl, not_found_response, strlen(not_found_response));
+        fprintf(stdout, "ERROR 404: %s", not_found_response);
         return;
     }
 
