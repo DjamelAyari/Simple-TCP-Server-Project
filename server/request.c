@@ -76,7 +76,7 @@ void handle_client_request(SSL *ssl)
     
     allocate_buffers();
     
-    while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 && !strstr(ptr_request, "\r\n\r\n"))
+    while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 /*&& !strstr(ptr_request, "\r\n\r\n")*/)
     {
         total_bytes_received += bytes_received;
 
@@ -94,6 +94,7 @@ void handle_client_request(SSL *ssl)
         loop_nbr = loop_nbr++;
         fprintf(stdout, "***BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, bytes_received);
         fprintf(stdout, "***TOTAL BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, total_bytes_received);
+
     }
 
     if (bytes_received <= 0)
@@ -125,6 +126,7 @@ void handle_client_request(SSL *ssl)
         free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
         return;
     }
+
     ptr_request[bytes_received] = '\0';
 
     send_cors_response(ssl);
@@ -139,6 +141,7 @@ void send_cors_response(SSL *ssl)
     {
         const char *response =
             "HTTP/1.1 204 No Content\r\n"
+            "Content-Type: application/x-www-form-urlencoded; charset=utf-8\r\n"
             "Access-Control-Allow-Origin: *\r\n"
             "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n"
             "Access-Control-Allow-Headers: Content-Type\r\n"
@@ -201,6 +204,8 @@ void fill_header_buffer(SSL *ssl, char *ptr_request)
         free_and_null((void **)&ptr_request, (void **)&ptr_header, (void **)&ptr_body, NULL);
         return;
     }
+
+    printf("***RAW HEADER: %s***\n", ptr_header);
 
     content_length_extraction(ssl, ptr_header);
 }
@@ -298,6 +303,8 @@ void fill_body_buffer(SSL *ssl, char *ptr_header, int content_length)
         printf("Content-Length is not superior to 0 !!!\n");
         printf("Content-Length is %d !!!\n", content_length);
     }
+
+    printf("***RAW BODY: %s***\n", ptr_body);
 
     process_post_request(ssl, ptr_header, ptr_body);
 
