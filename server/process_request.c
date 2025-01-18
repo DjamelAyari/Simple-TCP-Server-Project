@@ -4,18 +4,46 @@
 
 char *method_parse, *path_parse = NULL;
 long file_size = 0;
-char begin_path[10] = "html";
+//char begin_html_path[10] = "html";
+//char begin_cloud_image_path[10] = "cloud_image";
+char full_path[1024];
 
 void process_get_request(SSL *ssl, char *ptr_header)
 {
     fprintf(stdout, "Entered inside the process_get_request()\n");
     
     parse_request(ptr_header);
-    if(strstr(path_parse, "/low"))
+    if (path_parse)
     {
-        strncat(begin_path, path_parse, strlen(path_parse));
-        printf("Formatted path_parse: %s\n", begin_path);
+        // Base path to your HTML files
+        //const char *base_path = "html";
+        /*const char *base_path = NULL;
+        if(strstr(path_parse, "html"))
+        {
+            base_path = "html";
+        }
+        else if(strstr(path_parse, "css"))
+        {
+            base_path = "css";
+        }
+        else if(strstr(path_parse, "PNG"))
+        {
+            base_path = "cloud_image";
+        }*/
+
+        // Construct the full file path
+        //char full_path[1024];
+
+        //snprintf(full_path, sizeof(full_path), "%s%s", base_path, path_parse);
+
+        //printf("Formatted path_parse: %s\n", full_path);
+        printf("Formatted path_parse: %s\n", path_parse);
+        //send_file(ssl, full_path);
         send_file(ssl, path_parse);
+    }
+    else
+    {
+        fprintf(stdout, "Invalid path_parse value!\n");
     }
 }
 
@@ -51,6 +79,12 @@ void parse_request(char *ptr_header)
 		i++;
 	}
 
+    if (strncmp(path_parse, "/", 1) == 0)
+    {
+        // Remove the leading "/" for a proper relative path
+        path_parse++;
+    }
+
 	printf("Path after replacement: %s\n", path_parse);
 }
 
@@ -59,7 +93,7 @@ void send_file(SSL *ssl, char *file_path)
     fprintf(stdout, "Entered inside the send_file()\n");
     
     FILE *ptr_file;
-    ptr_file = fopen(begin_path, "r");
+    ptr_file = fopen(path_parse, "r");
     if(!ptr_file)
     {
         const char *not_found_response = 
