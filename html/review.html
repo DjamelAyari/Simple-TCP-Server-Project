@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!--<link rel="stylesheet" href="../css/review.css"> -->
+    </head>
+    <body>
+        <div class="banner">
+            <div class="website_title">
+                <h1>
+                    <a href="https://localhost/html/home.html">The clouds</a>
+                </h1>
+            </div>
+            <div class="link">
+                <a href="https://localhost/html/low.html">Low</a>
+                <a href="https://localhost/html/middle.html">Middle</a>
+                <a href="https://localhost/html/high.html">High</a>
+            </div>
+        </div>
+
+        <main class="main">
+            <h2>
+                Let us know what you liked about this website !
+            </h2>
+            
+            <form id="review_form" action="https://localhost/review" method="POST">
+                <label for="first_name">First name:</label><br>
+                <input type="text" id="first_name" name="first_name"><br>
+
+                <label for="last_name">Last name:</label><br>
+                <input type="text" id="last_name" name="last_name"><br>
+
+                <label for="text_zone">Text Zone:</label><br>
+                <textarea name="text_zone" cols="40" rows="5"></textarea><br>
+
+                <input type="submit" value="Submit">
+            </form>
+
+        </main>
+    </body>
+</html>

@@ -267,9 +267,11 @@ void content_length_extraction(SSL *ssl, char *ptr_header)
     *content_length_char_end = '\0';
 	content_length = atoi(content_length_char);
 	*content_length_char_end = '\r';
+
+    fill_body_buffer(ssl, ptr_header, content_length);
 }
 
-void fill_body_buffer(char *ptr_header, int content_length)
+void fill_body_buffer(SSL *ssl, char *ptr_header, int content_length)
 {
     printf("***COPYING THE BODY IN THE BODY'S BUFFER IF BODY EXIST***\n");
     
@@ -297,7 +299,9 @@ void fill_body_buffer(char *ptr_header, int content_length)
         printf("Content-Length is %d !!!\n", content_length);
     }
 
+    process_post_request(ssl, ptr_header, ptr_body);
+
 }
 
-void process_post_request(char *ptr_header, char *ptr_body);
+//void process_post_request(SSL *ssl, char *ptr_header, char *ptr_body);
 

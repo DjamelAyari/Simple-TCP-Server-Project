@@ -21,10 +21,12 @@ void process_get_request(SSL *ssl, char *ptr_header)
     }
 }
 
-/*process_post_request(char *ptr_header, char *ptr_body)
+void process_post_request(SSL *ssl, char *ptr_header, char *ptr_body)
 {
-    parse_request(ptr_header);
-}*/
+    fprintf(stdout, "Entered inside the process_post_request()\n");
+
+    save_data(ssl, ptr_body);
+}
 
 void parse_request(char *ptr_header)
 {
@@ -137,5 +139,30 @@ void send_file(SSL *ssl, char *file_path)
     }
 
     fclose(ptr_file);
+}
+
+void save_data(SSL *ssl, char *ptr_body)
+{
+    fprintf(stdout, "Entered inside the save_data()\n");
+
+    FILE *ptr_data_file;
+    ptr_data_file = fopen("data.txt", "a");
+    if(!ptr_data_file)
+    {
+        const char *not_found_response = 
+        "HTTP/1.1 404 Not Found\r\n"
+        "Content-Type: text/html\r\n"
+        "Content-Length: 0\r\n"
+        "Connection: close\r\n\r\n";
+
+        SSL_write(ssl, not_found_response, strlen(not_found_response));
+        fprintf(stdout, "ERROR 404: %s", not_found_response);
+        return;
+    }
+
+    //char content = "Hello World!";
+    fwrite(ptr_body, 1, 12, ptr_data_file);
+
+    fclose(ptr_data_file);
 }
 
