@@ -160,8 +160,17 @@ void save_data(SSL *ssl, char *ptr_body)
         return;
     }
 
+    char response_data_header[256];
+    snprintf(response_data_header, sizeof(response_data_header),
+    "HTTP/1.1 200 OK data are saved !\r\n"
+    /*"Content-Type: text/html; charset=utf-8\r\n"
+    "Content-Length: %ld\r\n"*/
+    "Connection: close\r\n\r\n");
+
     //char content = "Hello World!";
     fwrite(ptr_body, 1, 12, ptr_data_file);
+
+    SSL_write(ssl, response_data_header, strlen(response_data_header));
 
     fclose(ptr_data_file);
 }
