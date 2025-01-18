@@ -145,7 +145,8 @@ void handle_client_request(SSL *ssl)
         return;
     }
 
-    ptr_request[bytes_received] = '\0';
+    //ptr_request[bytes_received] = '\0';
+    //ptr_request[total_bytes_received +1] = '\0';
 
     send_cors_response(ssl);
     printf("TEST!!!\n");
@@ -290,6 +291,8 @@ void content_length_extraction(SSL *ssl, char *ptr_header)
     *content_length_char_end = '\0';
 	content_length = atoi(content_length_char);
 	*content_length_char_end = '\r';
+
+    ptr_request[total_bytes_received + content_length+1] = '\0';
 
     fill_body_buffer(ssl, ptr_header, content_length);
 }
