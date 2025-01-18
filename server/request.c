@@ -6,6 +6,9 @@
 #define INITIAL_BUFFER_SIZE 1024
 #define CHUNK_SIZE 1024
 
+/*#define TIMEOUT_SEC 120  // Timeout in seconds
+time_t start_time, current_time;*/
+
 int bytes_received = 0;
 int total_bytes_received = 0;
 int loop_nbr = 1;
@@ -76,10 +79,13 @@ void handle_client_request(SSL *ssl)
     
     allocate_buffers();
     
-    while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 /*&& !strstr(ptr_request, "\r\n\r\n")*/)
+    while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 && !strstr(ptr_request, "body_end"))
     {
-        total_bytes_received += bytes_received;
+        fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", bytes_received);
+        fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", total_bytes_received);
+        //total_bytes_received += bytes_received;
 
+        printf("BLABLABLA\n");
         if(total_bytes_received >= INITIAL_BUFFER_SIZE)
         {
             char *temp_request = realloc(ptr_request, total_bytes_received + CHUNK_SIZE);
@@ -90,12 +96,24 @@ void handle_client_request(SSL *ssl)
                 return;
             }
             ptr_request = temp_request;
+            fprintf(stdout, "Reallocated buffer to %d bytes.\n", total_bytes_received + CHUNK_SIZE);
         }
-        loop_nbr = loop_nbr++;
+        total_bytes_received += bytes_received;
         fprintf(stdout, "***BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, bytes_received);
         fprintf(stdout, "***TOTAL BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, total_bytes_received);
+        
+        loop_nbr++;
+
+        // Check timeout: if elapsed time exceeds the timeout, break the loop
+        /*time(&current_time);  // Get the current time
+        if (difftime(current_time, start_time) >= TIMEOUT_SEC) {
+            printf("Timeout reached. Exiting the loop.\n");
+            break;  // Exit loop after timeout
+        }*/
 
     }
+
+    printf("***RAW REQUEST: %s***\n", ptr_request);
 
     if (bytes_received <= 0)
     {
