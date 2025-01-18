@@ -101,23 +101,30 @@ void send_file(SSL *ssl, char *file_path)
     char response_header[256];
     if(strstr(path_parse, "html"))
     {
-    //char response_header[256];
-    snprintf(response_header, sizeof(response_header),
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/html; charset=utf-8\r\n"
-    "Content-Length: %ld\r\n"
-    "Connection: close\r\n\r\n",
-    file_size);
+        snprintf(response_header, sizeof(response_header),
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html; charset=utf-8\r\n"
+        "Content-Length: %ld\r\n"
+        "Connection: close\r\n\r\n",
+        file_size);
     }
     else if(strstr(path_parse, "css"))
     {
-        //char response_header[256];
-    snprintf(response_header, sizeof(response_header),
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/css; charset=utf-8\r\n"
-    "Content-Length: %ld\r\n"
-    "Connection: close\r\n\r\n",
-    file_size);
+        snprintf(response_header, sizeof(response_header),
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/css; charset=utf-8\r\n"
+        "Content-Length: %ld\r\n"
+        "Connection: close\r\n\r\n",
+        file_size);
+    }
+    else if (strstr(path_parse, "cloud_image"))
+    {
+        snprintf(response_header, sizeof(response_header),
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: image/png; charset=utf-8\r\n"
+        "Content-Length: %ld\r\n"
+        "Connection: close\r\n\r\n",
+        file_size);
     }
 
     SSL_write(ssl, response_header, strlen(response_header));
