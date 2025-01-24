@@ -79,7 +79,7 @@ void handle_client_request(SSL *ssl)
     
     allocate_buffers();
     
-    while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 && !strstr(ptr_request, "body_end"))
+    while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 /*&& !strstr(ptr_request, "body_end")*/)
     {
         fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", bytes_received);
         fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", total_bytes_received);
@@ -101,15 +101,19 @@ void handle_client_request(SSL *ssl)
         total_bytes_received += bytes_received;
         fprintf(stdout, "***BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, bytes_received);
         fprintf(stdout, "***TOTAL BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, total_bytes_received);
+
+        if(strstr(ptr_request, "GET") && strstr(ptr_request, "\r\n\r\n"))
+        {
+            printf("GET request headers fully received.\n");
+            break;
+        }
+        /*else if(strstr(ptr_request, "POST") && strstr(ptr_request, "body_end"))
+        {
+            printf("POST request body fully received.\n");
+            break;
+        }*/
         
         loop_nbr++;
-
-        // Check timeout: if elapsed time exceeds the timeout, break the loop
-        /*time(&current_time);  // Get the current time
-        if (difftime(current_time, start_time) >= TIMEOUT_SEC) {
-            printf("Timeout reached. Exiting the loop.\n");
-            break;  // Exit loop after timeout
-        }*/
 
     }
 
