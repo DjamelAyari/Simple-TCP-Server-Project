@@ -309,7 +309,8 @@ void fill_body_buffer(SSL *ssl, char *ptr_header, int content_length)
     
     if(content_length > 0)
     {
-        body_len = total_bytes_received - header_len;
+        //body_len = total_bytes_received - header_len;
+        body_len = content_length;
         if(body_len > INITIAL_BUFFER_SIZE)
         {
             char *temp_body = realloc(ptr_body, body_len);
@@ -322,7 +323,7 @@ void fill_body_buffer(SSL *ssl, char *ptr_header, int content_length)
             ptr_body = temp_body;
         }
 
-        strncpy(ptr_body, ptr_request, body_len);
+        strncpy(ptr_body, ptr_request+header_len, body_len);
         ptr_body[body_len] = '\0';
     }
     else
