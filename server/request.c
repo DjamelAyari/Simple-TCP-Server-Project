@@ -79,7 +79,7 @@ void handle_client_request(SSL *ssl)
     
     allocate_buffers();
     
-    while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 /*&& !strstr(ptr_request, "body_end")*/)
+    while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 && !strstr(ptr_request, "\r\n\r\n") && !strstr(ptr_request, "body_end"))
     {
         fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", bytes_received);
         fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", total_bytes_received);
@@ -102,16 +102,19 @@ void handle_client_request(SSL *ssl)
         fprintf(stdout, "***BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, bytes_received);
         fprintf(stdout, "***TOTAL BYTES RECEIVED DURING LOOP:%d = %d***\n", loop_nbr, total_bytes_received);
 
-        if(strstr(ptr_request, "GET") && strstr(ptr_request, "\r\n\r\n"))
+        // Check for GET request and complete headers
+        /*if (strstr(ptr_request, "GET") && strstr(ptr_request, "\r\n\r\n"))
         {
             printf("GET request headers fully received.\n");
             break;
         }
-        /*else if(strstr(ptr_request, "POST") && strstr(ptr_request, "body_end"))
+        // Check for POST request and "body_end"
+        else if (strstr(ptr_request, "POST") && strstr(ptr_request, "body_end"))
         {
             printf("POST request body fully received.\n");
             break;
         }*/
+
         
         loop_nbr++;
 

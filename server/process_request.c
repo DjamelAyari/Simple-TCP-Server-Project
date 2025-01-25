@@ -107,6 +107,8 @@ void send_file(SSL *ssl, char *file_path)
         "HTTP/1.1 200 OK\r\n"
         "Content-Type: text/html; charset=utf-8\r\n"
         "Content-Length: %ld\r\n"
+        "Connection: keep-alive\r\n"
+        "Keep-Alive: timeout=5, max=100\r\n"
         "Connection: close\r\n\r\n",
         file_size);
     }
@@ -116,6 +118,8 @@ void send_file(SSL *ssl, char *file_path)
         "HTTP/1.1 200 OK\r\n"
         "Content-Type: text/css; charset=utf-8\r\n"
         "Content-Length: %ld\r\n"
+        "Connection: keep-alive\r\n"
+        "Keep-Alive: timeout=5, max=100\r\n"
         "Connection: close\r\n\r\n",
         file_size);
     }
@@ -125,6 +129,8 @@ void send_file(SSL *ssl, char *file_path)
         "HTTP/1.1 200 OK\r\n"
         "Content-Type: image/png; charset=utf-8\r\n"
         "Content-Length: %ld\r\n"
+        "Connection: keep-alive\r\n"
+        "Keep-Alive: timeout=5, max=100\r\n"
         "Connection: close\r\n\r\n",
         file_size);
     }
