@@ -167,7 +167,9 @@ void save_data(SSL *ssl, char *ptr_body)
     }
 
     //char content = "Hello World!";
-    fwrite(ptr_body, 1, 12, ptr_data_file);
+    size_t buffer_size = strlen(ptr_body);
+    fwrite(ptr_body, 1, buffer_size, ptr_data_file);
+    fwrite("\n", 1, 1, ptr_data_file);
 
     char response_data_header[256];
     snprintf(response_data_header, sizeof(response_data_header),
