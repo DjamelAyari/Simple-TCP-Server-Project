@@ -1,6 +1,7 @@
 #include "server.h"
 #include "ssl.h"
 #include "request.h"
+#include <time.h>
 
 char *method_parse, *path_parse = NULL;
 long file_size = 0;
@@ -169,7 +170,13 @@ void save_data(SSL *ssl, char *ptr_body)
     //char content = "Hello World!";
     size_t buffer_size = strlen(ptr_body);
     fwrite(ptr_body, 1, buffer_size, ptr_data_file);
-    fwrite("\n", 1, 1, ptr_data_file);
+    fwrite("\r\n", 1, 1, ptr_data_file);
+    time_t t;
+    time(&t);
+    char *time_str = ctime(&t);
+    size_t time_length = strlen(time_str);
+    fwrite(ctime(&t), 1, time_length, ptr_data_file);
+    fwrite("\r\n", 1, 1, ptr_data_file);
 
     char response_data_header[256];
     snprintf(response_data_header, sizeof(response_data_header),
