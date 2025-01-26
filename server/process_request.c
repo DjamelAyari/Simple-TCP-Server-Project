@@ -240,7 +240,8 @@ void thank_you_file(SSL *ssl)
     // Send file content in chunks
     char file_data_chunk_send[4096];
     size_t bytes_read;
-    while ((bytes_read = fread(file_data_chunk_send, 1, sizeof(file_data_chunk_send), ptr_thank_you_file)) > 0) {
+    while((bytes_read = fread(file_data_chunk_send, 1, sizeof(file_data_chunk_send), ptr_thank_you_file)) > 0)
+    {
         SSL_write(ssl, file_data_chunk_send, bytes_read);
     }
 
