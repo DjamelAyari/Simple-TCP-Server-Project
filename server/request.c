@@ -81,7 +81,7 @@ void handle_client_request(SSL *ssl)
     
     while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 /*&& !strstr(ptr_request, "body_end")*/)
     {
-        printf("Full request received so far:\n%s\n", ptr_request);
+        printf("Full request received so far:\n%s!!!\n", ptr_request);
         
         fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", bytes_received);
         fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", total_bytes_received);

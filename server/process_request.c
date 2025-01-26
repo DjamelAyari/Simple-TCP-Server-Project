@@ -167,7 +167,6 @@ void save_data(SSL *ssl, char *ptr_body)
         return;
     }
 
-    //char content = "Hello World!";
     size_t buffer_size = strlen(ptr_body);
     fwrite(ptr_body, 1, buffer_size, ptr_data_file);
     fwrite("\r\n", 1, 1, ptr_data_file);
@@ -178,72 +177,16 @@ void save_data(SSL *ssl, char *ptr_body)
     fwrite(ctime(&t), 1, time_length, ptr_data_file);
     fwrite("\r\n", 1, 1, ptr_data_file);
 
-    char response_data_header[500];
-    snprintf(response_data_header, sizeof(response_data_header),
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/html; charset=utf-8\r\n"
-    "Connection: keep-alive\r\n\r\n");
-    
-    SSL_write(ssl, response_data_header, strlen(response_data_header));
+    char redirect_response[256];
+    snprintf(redirect_response, sizeof(redirect_response),
+        "HTTP/1.1 303 See Other\r\n"
+        "Location: https://localhost/html/home.html\r\n"
+        "Content-Type: text/html\r\n"
+        "Connection: close\r\n\r\n");
+
+    SSL_write(ssl, redirect_response, strlen(redirect_response));
 
     fclose(ptr_data_file);
-
-    thank_you_file(ssl);
 }
 
-void thank_you_file(SSL *ssl)
-{
-    fprintf(stdout, "Entered inside the thank_you_file()\n");
-    
-    char thank_you_file_path[] = "./html/thank_you.html";
 
-    fprintf(stdout, "Trying to open file: %s\n", thank_you_file_path);
-    
-    FILE *ptr_thank_you_file = fopen(thank_you_file_path, "r");
-    if (!ptr_thank_you_file) {
-        const char *not_found_response = 
-            "HTTP/1.1 404 Not Found\r\n"
-            "Content-Type: text/html\r\n"
-            "Content-Length: 0\r\n"
-            "Connection: close\r\n\r\n";
-
-        SSL_write(ssl, not_found_response, strlen(not_found_response));
-        fprintf(stderr, "ERROR 404: File not found: %s\n", thank_you_file_path);
-        return;
-    }
-
-    // Determine file size
-    if (fseek(ptr_thank_you_file, 0, SEEK_END) != 0) {
-        fprintf(stderr, "Error seeking file\n");
-        fclose(ptr_thank_you_file);
-        return;
-    }
-    long file_size = ftell(ptr_thank_you_file);
-    if (file_size < 0) {
-        fprintf(stderr, "Error getting file size\n");
-        fclose(ptr_thank_you_file);
-        return;
-    }
-    rewind(ptr_thank_you_file);
-
-    // Prepare HTTP response headers
-    char response_header[256];
-    snprintf(response_header, sizeof(response_header),
-             "HTTP/1.1 200 OK\r\n"
-             "Content-Type: text/html; charset=utf-8\r\n"
-             "Content-Length: %ld\r\n"
-             "Connection: close\r\n\r\n",
-             file_size);
-
-    SSL_write(ssl, response_header, strlen(response_header));
-
-    // Send file content in chunks
-    char file_data_chunk_send[4096];
-    size_t bytes_read;
-    while((bytes_read = fread(file_data_chunk_send, 1, sizeof(file_data_chunk_send), ptr_thank_you_file)) > 0)
-    {
-        SSL_write(ssl, file_data_chunk_send, bytes_read);
-    }
-
-    fclose(ptr_thank_you_file);
-}
