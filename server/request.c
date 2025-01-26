@@ -97,6 +97,11 @@ void handle_client_request(SSL *ssl)
             printf("GET request body fully received.\n");
             break;
         }
+        else if (strstr(ptr_request, "/home.html?redirect=true"))
+        {
+            printf("REDIRECT request fully received.\n");
+            break;
+        }
 
         printf("BLABLABLA\n");
         if(total_bytes_received >= INITIAL_BUFFER_SIZE)

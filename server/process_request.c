@@ -178,13 +178,25 @@ void save_data(SSL *ssl, char *ptr_body)
     fwrite(ctime(&t), 1, time_length, ptr_data_file);
     fwrite("\r\n", 1, 1, ptr_data_file);
 
-    char response_data_header[256];
+    char response_data_header[500];
     snprintf(response_data_header, sizeof(response_data_header),
-    "HTTP/1.1 200 OK data are saved !\r\n"
-    /*"Content-Type: text/html; charset=utf-8\r\n"
-    "Content-Length: %ld\r\n"*/
-    "Connection: close\r\n\r\n");
-
+    "HTTP/1.1 302 Found\r\n"
+    "Location: https://localhost/html/home.html\r\n"
+    "Content-Type: text/html; charset=utf-8\r\n"
+    "Connection: keep-alive\r\n\r\n"
+    "<!DOCTYPE html>"
+    "<html lang=\"en\">"
+    "<head>"
+    "<meta charset=\"UTF-8\">"
+    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+    "<title>Thank You</title>"
+    "</head>"
+    "<body>"
+    "<h1>Thank you for your review!</h1>"
+    "<p>Your feedback has been submitted successfully. You are being redirected...</p>"
+    "</body>"
+    "</html>");
+    
     SSL_write(ssl, response_data_header, strlen(response_data_header));
 
     fclose(ptr_data_file);
