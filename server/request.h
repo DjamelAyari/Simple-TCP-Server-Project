@@ -22,4 +22,6 @@ void send_file(SSL *ssl, char *file_path);
 
 void save_data(SSL *ssl, char *ptr_body);
 
+void thank_you_file(SSL *ssl);
+
 

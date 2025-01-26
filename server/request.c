@@ -81,6 +81,8 @@ void handle_client_request(SSL *ssl)
     
     while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 /*&& !strstr(ptr_request, "body_end")*/)
     {
+        printf("Full request received so far:\n%s\n", ptr_request);
+        
         fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", bytes_received);
         fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", total_bytes_received);
         //total_bytes_received += bytes_received;
@@ -95,11 +97,6 @@ void handle_client_request(SSL *ssl)
         else if (strstr(ptr_request, "GET") && strstr(ptr_request, "\r\n\r\n"))
         {
             printf("GET request body fully received.\n");
-            break;
-        }
-        else if (strstr(ptr_request, "/home.html?redirect=true"))
-        {
-            printf("REDIRECT request fully received.\n");
             break;
         }
 
