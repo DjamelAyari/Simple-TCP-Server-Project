@@ -177,36 +177,21 @@ void save_data(SSL *ssl, char *ptr_body)
     fwrite(ctime(&t), 1, time_length, ptr_data_file);
     fwrite("\r\n", 1, 1, ptr_data_file);
 
-    char redirect_response[1000];
-    snprintf(redirect_response, sizeof(redirect_response),
-        "HTTP/1.1 303 See Other\r\n"
-        "Location: https://localhost/html/home.html\r\n"
-        "Content-Type: text/html\r\n"
-        "Connection: close\r\n"
-        "Content-Length: 0\r\n\r\n");
-        /*"<html>"
-    "<head>"
-        "<!--<link rel='stylesheet' href='../css/review.css'> -->"
-    "</head>"
-    "<body>"
-        "<div class='banner'>"
-            "<div class='website_title'>"
-                "<h1>"
-                    "<a href='https://localhost/html/home.html'>The clouds</a>"
-                "</h1>"
-            "</div>"
-            "<div class='link'>"
-                "<a href='https://localhost/html/low.html'>Low</a>"
-                "<a href='https://localhost/html/middle.html'>Middle</a>"
-                "<a href='https://localhost/html/high.html'>High</a>"
-            "</div>"
-        "</div>"
-        "</body>"
-        "</html>");*/
-
-    SSL_write(ssl, redirect_response, strlen(redirect_response));
-
     fclose(ptr_data_file);
+
+    const char *response = 
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html; encoding=utf8\r\n"
+        "Content-Length: 0\r\n"
+        "Connection: keep-alive\r\n"
+        "Keep-Alive: timeout=5, max=100\r\n"
+        "Connection: close\r\n\r\n";
+
+        SSL_write(ssl, response, strlen(response));
+
+    //fclose(ptr_data_file);
+
+
 }
 
 
