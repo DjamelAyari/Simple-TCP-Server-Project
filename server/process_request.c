@@ -179,7 +179,7 @@ void save_data(SSL *ssl, char *ptr_body)
 
     fclose(ptr_data_file);
 
-    const char *response = 
+    /*const char *response = 
         "HTTP/1.1 200 OK\r\n"
         "Content-Type: text/html; encoding=utf8\r\n"
         "Content-Length: 0\r\n"
@@ -190,7 +190,31 @@ void save_data(SSL *ssl, char *ptr_body)
         SSL_write(ssl, response, strlen(response));
 
     //fclose(ptr_data_file);
-    fprintf(stdout, "SFDSDSFDSFDSFSDF\n");
+    fprintf(stdout, "SFDSDSFDSFDSFSDF\n");*/
+
+    const char *html_body =
+    "<html>"
+    "<head><title>My Page</title></head>"
+    "<body>"
+    "<h1>Welcome!</h1>"
+    "<p>Click <a href='https://localhost/html/home.html'>here</a> to visit example.com.</p>"
+    "</body>"
+    "</html>";
+
+char response[1024];
+int content_length = strlen(html_body);
+
+snprintf(response, sizeof(response),
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Type: text/html; charset=UTF-8\r\n"
+    "Content-Length: %d\r\n"
+    "Connection: close\r\n"
+    "\r\n"
+    "%s",
+    content_length, html_body);
+
+SSL_write(ssl, response, strlen(response));
+
 
 }
 
