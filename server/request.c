@@ -87,6 +87,17 @@ void handle_client_request(SSL *ssl)
         fprintf(stdout, "***!!!!!!!!!!!!!!!!!:%d***\n", total_bytes_received);
         //total_bytes_received += bytes_received;
 
+        void print_hex(const unsigned char *data, size_t length)
+        {
+            for (size_t i = 0; i < length; i++)
+            {
+                printf("%02X ", data[i]);
+            }
+            printf("\n");
+        }
+
+        print_hex((unsigned char*)ptr_request, bytes_received);
+
         // Check for GET request and complete headers
         if (strstr(ptr_request, "POST") && strstr(ptr_request, "body_end"))
         {
@@ -97,6 +108,11 @@ void handle_client_request(SSL *ssl)
         else if (strstr(ptr_request, "GET") && strstr(ptr_request, "\r\n\r\n"))
         {
             printf("GET request body fully received.\n");
+            break;
+        }
+        else if (strstr(ptr_request, "0"))
+        {
+            printf("SOME ZEROS !!!\n");
             break;
         }
 

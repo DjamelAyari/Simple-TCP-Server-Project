@@ -190,7 +190,7 @@ void save_data(SSL *ssl, char *ptr_body)
         SSL_write(ssl, response, strlen(response));
 
     //fclose(ptr_data_file);
-
+    fprintf(stdout, "SFDSDSFDSFDSFSDF\n");
 
 }
 
