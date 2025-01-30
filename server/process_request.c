@@ -179,19 +179,6 @@ void save_data(SSL *ssl, char *ptr_body)
 
     fclose(ptr_data_file);
 
-    /*const char *response = 
-        "HTTP/1.1 200 OK\r\n"
-        "Content-Type: text/html; encoding=utf8\r\n"
-        "Content-Length: 0\r\n"
-        "Connection: keep-alive\r\n"
-        "Keep-Alive: timeout=5, max=100\r\n"
-        "Connection: close\r\n\r\n";
-
-        SSL_write(ssl, response, strlen(response));
-
-    //fclose(ptr_data_file);
-    fprintf(stdout, "SFDSDSFDSFDSFSDF\n");*/
-
     const char *html_body =
     "<html>"
     "<head><title>My Page</title></head>"
@@ -201,7 +188,7 @@ void save_data(SSL *ssl, char *ptr_body)
     "</body>"
     "</html>";
 
-char response[1024];
+char response[2048];
 int content_length = strlen(html_body);
 
 snprintf(response, sizeof(response),
@@ -215,6 +202,7 @@ snprintf(response, sizeof(response),
 
 SSL_write(ssl, response, strlen(response));
 
+////////////////////////////////////////////////////////////////////
 
 }
 

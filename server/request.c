@@ -110,7 +110,7 @@ void handle_client_request(SSL *ssl)
             printf("GET request body fully received.\n");
             break;
         }
-        else if (strstr(ptr_request, "0"))
+        else if (strspn(ptr_request, "0") == strlen(ptr_request))
         {
             printf("SOME ZEROS !!!\n");
             break;
