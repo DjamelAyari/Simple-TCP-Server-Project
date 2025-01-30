@@ -45,6 +45,8 @@ void free_and_null(void **first, ...)
 
 void allocate_buffers()
 {
+    printf("Entered in allocate_buffers() !\n");
+    
     ptr_request = malloc(INITIAL_BUFFER_SIZE * sizeof(char));
     if(ptr_request == NULL)
     {
@@ -113,6 +115,7 @@ void handle_client_request(SSL *ssl)
         else if (strspn(ptr_request, "0") == strlen(ptr_request))
         {
             printf("SOME ZEROS !!!\n");
+            printf("SSL_read() failed: %d\n", SSL_get_error(ssl, bytes_received));
             break;
         }
 

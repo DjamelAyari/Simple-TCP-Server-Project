@@ -184,7 +184,7 @@ void save_data(SSL *ssl, char *ptr_body)
     "<head><title>My Page</title></head>"
     "<body>"
     "<h1>Welcome!</h1>"
-    "<p>Click <a href='https://localhost/html/home.html'>here</a> to visit example.com.</p>"
+    "<a href='https://localhost/html/home.html'>HOME</a>"
     "</body>"
     "</html>";
 
@@ -202,7 +202,15 @@ snprintf(response, sizeof(response),
 
 SSL_write(ssl, response, strlen(response));
 
-////////////////////////////////////////////////////////////////////
+/*const char *redirect_response = 
+    "HTTP/1.1 307 See Other\r\n"
+    "Location: https://localhost/html/home.html\r\n"
+    "Content-Length: 0\r\n"
+    "Connection: close\r\n"
+    "\r\n";
+SSL_write(ssl, redirect_response, strlen(redirect_response));*/
+printf("redirect_response sent !\n");
+
 
 }
 
