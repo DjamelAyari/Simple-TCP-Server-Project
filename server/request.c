@@ -80,6 +80,8 @@ void handle_client_request(SSL *ssl)
     fprintf(stdout, "Entered inside the handle_client_request()\n");
     
     allocate_buffers();
+
+    printf("Bytes count still available in the OpenSSL internal buffer: %d\n", SSL_pending(ssl));
     
     while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 /*&& !strstr(ptr_request, "body_end")*/)
     {
@@ -115,7 +117,7 @@ void handle_client_request(SSL *ssl)
         else if (strspn(ptr_request, "0") == strlen(ptr_request))
         {
             printf("SOME ZEROS !!!\n");
-            printf("SSL_read() failed: %d\n", SSL_get_error(ssl, bytes_received));
+            printf("SSL_read(): %d\n", SSL_get_error(ssl, bytes_received));
             break;
         }
 

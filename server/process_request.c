@@ -212,8 +212,6 @@ SSL_write(ssl, redirect_response, strlen(redirect_response));*/
 printf("redirect_response sent !\n");
 
 
-
-
 }
 
 
