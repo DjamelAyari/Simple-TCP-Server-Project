@@ -82,7 +82,7 @@ void handle_client_request(SSL *ssl)
     allocate_buffers();
 
     printf("Bytes count still available in the OpenSSL internal buffer: %d\n", SSL_pending(ssl));
-    
+
     while((bytes_received = SSL_read(ssl, ptr_request+total_bytes_received, CHUNK_SIZE)) > 0 /*&& !strstr(ptr_request, "body_end")*/)
     {
         printf("Full request received so far:\n%s!!!\n", ptr_request);

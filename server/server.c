@@ -77,6 +77,15 @@ int main()
         SSL_CTX_free(ctx);
         return(1);
     }
+
+    if (!SSL_CTX_check_private_key(ctx))
+    {
+        fprintf(stderr, "Private key does not match the certificate public key\n");
+        ERR_print_errors_fp(stderr);
+        SSL_CTX_free(ctx);
+        return 1;
+    }
+
     
     fprintf(stdout, "SSL initialization completed successfully.\n");
     fprintf(stdout, "Ready to use socket API.\n");
@@ -190,17 +199,32 @@ int main()
                 }
                 else
                 {
+                    printf("Creating new SSL object for client socket: %d\n", i);
                     SSL *ssl = SSL_new(ctx);// Create SSL object
                     if (!ssl)
                     {
                         fprintf(stderr, "SSL_new failed.\n");
+                        fprintf(stderr, "SSL_new() failed: %s\n", ERR_error_string(ERR_get_error(), NULL));
                         SSL_CTX_free(ctx);
                         CLOSESOCKET(i);
                         FD_CLR(i, &master);
                         continue;
                     }
+                    fprintf(stdout, "SSL_new() ok !\n");
+
 
                     SSL_set_fd(ssl, i);// Attach to socket_client (i)
+                    if (SSL_set_fd(ssl, i) != 1)
+                    {
+                        fprintf(stderr, "SSL_set_fd() failed.\n");
+                        fprintf(stderr, "SSL_set_fd() failed for socket %d: %s\n", i, ERR_error_string(ERR_get_error(), NULL));
+                        SSL_free(ssl);
+                        CLOSESOCKET(i);
+                        FD_CLR(i, &master);
+                        continue;
+                    }
+                    fprintf(stdout, "SSL_set_fd() ok !\n");
+
                     if (SSL_accept(ssl) <= 0)
                     {
                         fprintf(stderr, "SSL_accept failed: %s\n", ERR_error_string(ERR_get_error(), NULL));
@@ -209,6 +233,7 @@ int main()
                         FD_CLR(i, &master);
                         continue;
                     }
+                    fprintf(stdout, "SSL_set_fd() ok !\n");
                     
                     fprintf(stdout, "Entering the handle_client_request()...\n");
                     handle_client_request(ssl);

@@ -195,6 +195,7 @@ snprintf(response, sizeof(response),
     "HTTP/1.1 200 OK\r\n"
     "Content-Type: text/html; charset=UTF-8\r\n"
     "Content-Length: %d\r\n"
+    "Cache-Control: no-store, no-cache, must-revalidate\r\n"
     "Connection: close\r\n"
     "\r\n"
     "%s",
