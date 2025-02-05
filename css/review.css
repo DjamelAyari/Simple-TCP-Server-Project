@@ -1,0 +1,58 @@
+body
+{
+    background-image: url("../cloud_image/background_image.jfif");
+    background-size: cover; /* Adjusts the image to fill the screen */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    font-family: 'Quicksand', sans-serif; /* Default font */
+}
+
+div:not(.low_page):not(.middle_page):not(.high_page)
+{
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
+    backdrop-filter: blur(10px); /* Blurred background */
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    border-radius: 10px; /* Smooth edges */
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Light border */
+}
+
+a
+{
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.banner
+{
+    text-align: center;
+}
+
+.cloud_types {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; /* Creates three equal columns */
+    gap: 10px; /* Space between the divs */
+    margin-top: 10px;
+    width: 20%;
+}
+
+.low_page, .middle_page, .high_page {
+    text-align: center;
+}
+
+.main
+{
+    display: flex;
+    /*grid-template-columns: 1fr 1fr; /* Two columns of equal size */
+    gap: 25px; /* Adds space between them */
+    margin-top: 25px; /* Adds space between `.banner` and `.main` */
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
+
+
+

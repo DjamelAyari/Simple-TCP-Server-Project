@@ -1,44 +1,52 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <!--<link rel="stylesheet" href="../css/review.css"> -->
+        <link rel="stylesheet" href="../css/review.css">
     </head>
     <body>
         <div class="banner">
-            <div class="website_title">
                 <h1>
                     <a href="https://localhost/html/home.html">The clouds</a>
                 </h1>
             </div>
-            <div class="link">
-                <a href="https://localhost/html/low.html">Low</a>
-                <a href="https://localhost/html/middle.html">Middle</a>
-                <a href="https://localhost/html/high.html">High</a>
+    
+            <div class="cloud_types">
+                <div class="low_page">
+                    <a href="https://localhost/html/low.html">Low</a>
+                </div>
+    
+                <div class="middle_page">
+                    <a href="https://localhost/html/middle.html">Middle</a>
+                </div>
+    
+                <div class="high_page">
+                    <a href="https://localhost/html/high.html">High</a>
+                </div>
             </div>
-        </div>
 
         <main class="main">
-            <h2>
-                Let us know what you liked about this website !
-            </h2>
+            <div class="form">
+                <h2>
+                    Let us know what you liked about this website !
+                </h2>
 
-            <!--<iframe name="hidden_iframe" style="display:none;"></iframe>-->
-            
-            <form id="review_form" action="https://localhost/html/thank_you.html" method="POST">
-                <label for="first_name">First name:</label><br>
-                <input type="text" id="first_name" name="first_name"><br>
+                <!--<iframe name="hidden_iframe" style="display:none;"></iframe>-->
+                
+                <form id="review_form" action="https://localhost/html/thank_you.html" method="POST">
+                    <label for="first_name">First name:</label><br>
+                    <input type="text" id="first_name" name="first_name"><br>
 
-                <label for="last_name">Last name:</label><br>
-                <input type="text" id="last_name" name="last_name"><br>
+                    <label for="last_name">Last name:</label><br>
+                    <input type="text" id="last_name" name="last_name"><br>
 
-                <label for="text_zone">Text Zone:</label><br>
-                <textarea name="text_zone" cols="40" rows="5"></textarea><br>
+                    <label for="text_zone">Text Zone:</label><br>
+                    <textarea name="text_zone" cols="40" rows="5"></textarea><br>
 
-                <input type="hidden" name="source" value="body_end">
+                    <input type="hidden" name="source" value="body_end">
 
-                <input type="submit" value="Submit">
-            </form>
-
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
         </main>
     </body>
 </html>
